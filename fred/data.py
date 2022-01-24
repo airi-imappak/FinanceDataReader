@@ -5,7 +5,7 @@ from datetime import datetime
 import re
 from io import BytesIO
 import zipfile
-from FinanceDataReader._utils import (_convert_letter_to_num, _validate_dates)
+from _utils import (_convert_letter_to_num, _validate_dates)
 
 class FredReader:
     def __init__(self, symbol, start=None, end=None, exchange=None, data_source=None):

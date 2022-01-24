@@ -2,7 +2,8 @@ import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 
-from FinanceDataReader._utils import (_convert_letter_to_num, _validate_dates)
+from _utils import (_convert_letter_to_num, _validate_dates)
+from conf import headers
 
 class InvestingEtfListing:
     def __init__(self, country):
@@ -18,7 +19,6 @@ class InvestingEtfListing:
             msg = "country unsupported. support countries:" + str(list(country_map.keys()))
             raise ValueError(msg)
 
-        headers = { 'User-Agent':'Mozilla', }
         url = 'https://kr.investing.com/etfs/' + country_map[self.country] + '-etfs'
         r = requests.get(url, headers=headers)
 

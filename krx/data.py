@@ -3,6 +3,7 @@ import json
 import pandas as pd
 from io import BytesIO
 from datetime import datetime
+from conf import headers
 
 class KrxDelistingReader:
     def __init__(self, symbol, start=None, end=None, exchange=None, data_source=None):
@@ -11,7 +12,6 @@ class KrxDelistingReader:
         self.end = datetime(2100,1,1) if end==None else pd.to_datetime(end)
 
     def read(self):
-        headers = {'User-Agent': 'Chrome/78.0.3904.87 Safari/537.36',}
         data = {
             'mktsel': 'ALL',
             'searchText': '',

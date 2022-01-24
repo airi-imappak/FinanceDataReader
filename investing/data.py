@@ -2,7 +2,8 @@ from io import StringIO
 import json
 import requests
 import pandas as pd
-from FinanceDataReader._utils import (_convert_letter_to_num, _validate_dates)
+from _utils import (_convert_letter_to_num, _validate_dates)
+from conf import headers
 
 try:
     from pandas import json_normalize
@@ -22,10 +23,6 @@ class InvestingDailyReader:
         symbol = symbol.upper()
 
         url = 'https://kr.investing.com/search/service/searchTopBar'
-        headers = {
-            'User-Agent':'Mozilla',
-            'X-Requested-With':'XMLHttpRequest',
-        }
         r = requests.post(url, data={'search_text': symbol}, headers=headers)
         jo = json.loads(r.text)
         if len(jo['quotes']) == 0:
@@ -72,11 +69,6 @@ class InvestingDailyReader:
             'sort_col':'date',
             'sort_ord':'ASC',
             'action':'historical_data',
-        }
-
-        headers = {
-            'User-Agent':'Mozilla',
-            'X-Requested-With':'XMLHttpRequest',
         }
 
         r = requests.post(url, data, headers=headers)

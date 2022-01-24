@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 import json
 import ssl
+from conf import headers
 
 try:
     from pandas import json_normalize
@@ -22,7 +23,7 @@ class KrxStockListing:
         ssl._create_default_https_context = ssl._create_unverified_context
         
         url = 'http://kind.krx.co.kr/corpgeneral/corpList.do?method=download&searchType=13'
-        df_listing = pd.read_html(url, header=0)[0]
+        df_listing = pd.read_html(url, header=headers)[0]
         cols_ren = {'회사명':'Name', '종목코드':'Symbol', '업종':'Sector', '주요제품':'Industry', 
                             '상장일':'ListingDate', '결산월':'SettleMonth',  '대표자명':'Representative', 
                             '홈페이지':'HomePage', '지역':'Region', }
@@ -73,8 +74,6 @@ class KrxDelisting:
             'share': '1',
             'csvxls_isNo': 'true',
         }
-
-        headers = {'User-Agent': 'Chrome/78.0.3904.87 Safari/537.36',}
 
         url = 'http://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd'
         r = requests.post(url, data, headers=headers)
@@ -138,9 +137,22 @@ class KrxAdministrative:
 
     def read(self):
         url = "http://kind.krx.co.kr/investwarn/adminissue.do?method=searchAdminIssueSub&currentPageSize=5000&forward=adminissue_down"
-        df = pd.read_html(url, header=0)[0]
+        df = pd.read_html(url, header=headers)[0]
         df['종목코드'] = df['종목코드'].apply(lambda x: '{:0>6d}'.format(x))
         df['지정일'] = pd.to_datetime(df['지정일'])
         col_map = {'종목코드':'Symbol', '종목명':'Name', '지정일':'DesignationDate', '지정사유':'Reason'}
         df.rename(columns=col_map, inplace=True)    
         return df[['Symbol', 'Name', 'DesignationDate', 'Reason']]    
+
+
+class KrxHalt:
+    def __init__(self, market):
+        self.market = market
+
+    def read(self):
+        url = f"https://kind.krx.co.kr/investwarn/tradinghaltissue.do?method=searchTradingHaltIssueSub&currentPageSize=5000&pageIndex=1&searchMode=1&forward=tradinghaltissue_down&marketType={2 if self.market == 'KOSDAQ' else 1}"
+        df = pd.read_html(url, header=headers)[0]
+        df['종목코드'] = df['종목코드'].apply(lambda x: '{:0>6d}'.format(x))
+        col_map = {'종목코드':'Symbol', '종목명':'Name', '사유':'Reason'}
+        df.rename(columns=col_map, inplace=True)    
+        return df[['Symbol', 'Name', 'Reason']]    

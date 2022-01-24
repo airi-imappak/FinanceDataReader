@@ -1,13 +1,13 @@
-from FinanceDataReader.investing.data import (InvestingDailyReader)
-from FinanceDataReader.fred.data import (FredReader)
-from FinanceDataReader.krx.data import (KrxDelistingReader)
-from FinanceDataReader.naver.data import (NaverDailyReader)
-from FinanceDataReader.nasdaq.listing import (NasdaqStockListing)
-from FinanceDataReader.krx.listing import (KrxStockListing, KrxDelisting, KrxMarcapListing, KrxAdministrative)
-from FinanceDataReader.wikipedia.listing import (WikipediaStockListing)
-from FinanceDataReader.investing.listing import (InvestingEtfListing)
-from FinanceDataReader.naver.listing import (NaverStockListing, NaverEtfListing)
-from FinanceDataReader._utils import (_convert_letter_to_num, _validate_dates)
+from investing.data import (InvestingDailyReader)
+from fred.data import (FredReader)
+from krx.data import (KrxDelistingReader)
+from naver.data import (NaverDailyReader)
+from nasdaq.listing import (NasdaqStockListing)
+from krx.listing import (KrxStockListing, KrxDelisting, KrxMarcapListing, KrxAdministrative, KrxHalt)
+from wikipedia.listing import (WikipediaStockListing)
+from investing.listing import (InvestingEtfListing)
+from naver.listing import (NaverStockListing, NaverEtfListing)
+from _utils import (_convert_letter_to_num, _validate_dates)
 
 import re
 import pandas as pd
@@ -66,6 +66,8 @@ def StockListing(market):
         return KrxMarcapListing(market).read()
     if market in [ 'KRX-ADMINISTRATIVE' ]:
         return KrxAdministrative(market).read()
+    if market in [ 'KRX-HALT' ]:
+        return pd.concat(KrxHalt('KOSPI').read(), KrxHalt('KOSDAQ').read())
     if market in [ 'S&P500', 'SP500']:
         return WikipediaStockListing(market).read()
     if market.startswith('ETF'):

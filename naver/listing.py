@@ -1,14 +1,16 @@
 import requests
 from bs4 import BeautifulSoup
 import json
+from json import JSONDecodeError
 import pandas as pd
+from conf import headers
 
 try:
     from pandas import json_normalize
 except ImportError:
     from pandas.io.json import json_normalize
 
-from FinanceDataReader._utils import (_convert_letter_to_num, _validate_dates)
+from _utils import (_convert_letter_to_num, _validate_dates)
 
 __tqdm_msg = '''
 tqdm not installed. please install as follows
@@ -48,7 +50,6 @@ class NaverStockListing:
             raise ModuleNotFoundError(__tqdm_msg)
                 
         url = f'http://api.stock.naver.com/stock/exchange/{exchange}/marketValue?page=1&pageSize=60'
-        headers={'user-agent': 'Mozilla/5.0'}
         try:
             r = requests.get(url, headers=headers)
             jo = json.loads(r.text)
